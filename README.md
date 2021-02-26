@@ -33,6 +33,13 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 | SQS Queues                         | ✅   | ✅     | ✅                               |
 | SNS Topics                         | ✅   | ✅     | ❌                               |
 
+## Pre-requisities
+
+* boto findable credentials (~/.aws/ etc)
+* Docker version > 19.03.13, build 4484c46d9d
+* If running from source; go version go1.16 darwin/amd64
+
+
 ## Installing
 
 Pre built binaries:
@@ -40,15 +47,11 @@ Pre built binaries:
     curl -O release/rpCheckup
 
 
-Build binary:
-    
+Run from source:
+
+    git clone https://github.com/goldfiglabs/rpCheckup.git
+    cd rpCheckup
     go run main.go
-
-
-## Pre-requisities
-
-* Docker version > 19.03.13, build 4484c46d9d
-* boto findable credentials (~/.aws/ etc)
 
 ## Usage
 
@@ -63,6 +66,8 @@ TODO: Describe down-scoped credential found in goldfiglabs/introspector?
 
 ## Notes
 Since rpCheckup relies on Introspector's snapshots, rpCheckup is unable to detect policies that are no longer attached. When detecting flapping or transient access, please use tools which utilize audit and security logs (CloudTrail, etc). See [here][2] for further information in preventing resource exposure. 
+
+TODO: Add example runs against Endgame Terraform'd account.
 
 ## License
 
