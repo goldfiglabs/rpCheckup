@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/csv"
 	"flag"
 	"fmt"
 	"html/template"
@@ -61,6 +62,28 @@ var accessColors = map[string]string{
 	"External Accounts": "orange",
 	"In-Org Accounts":   "yellow",
 	"Private":           "green",
+}
+
+func writeCSVReport(rpReport *report.Report, outputFilename string) error {
+	outputFile, err := os.Create(outputFilename)
+	if err != nil {
+		return errors.Wrapf(err, "Failed to create output file %v", outputFilename)
+	}
+	defer outputFile.Close()
+	writer := csv.NewWriter(outputFile)
+	writer.Write([]string{"ARN", "Service", "Resource", "Access Allows", "In-Org Accounts", "External Accounts", "Is Public"})
+	for _, row := range rpReport.Rows {
+		writer.Write([]string{
+			row.Arn,
+			row.Service,
+			row.ProviderType,
+			row.Access(),
+			strings.Join(row.InOrgAccounts, ", "),
+			strings.Join(row.ExternalAccounts, ", "),
+			strconv.FormatBool(row.IsPublic),
+		})
+	}
+	return nil
 }
 
 func writeHTMLReport(rpReport *report.Report, outputFilename string) error {
@@ -152,9 +175,11 @@ func main() {
 	pkger.Include("/templates")
 	pkger.Include("/queries")
 	var skipIntrospector, leavePostgresUp, reusePostgres bool
+	var outputDir string
 	flag.BoolVar(&skipIntrospector, "skip-introspector", false, "Skip running an import, use existing data")
 	flag.BoolVar(&leavePostgresUp, "leave-postgres", false, "Leave postgres running in a docker container")
 	flag.BoolVar(&reusePostgres, "reuse-postgres", false, "Reuse an existing postgres instance, if it is running")
+	flag.StringVar(&outputDir, "output", "output", "Specify a directory for output")
 	flag.Parse()
 	ds, err := ds.NewSession()
 	if err != nil {
@@ -200,8 +225,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
+		err = os.Mkdir(outputDir, 0755)
+		if err != nil {
+			panic(err)
+		}
+	}
 	printReportRows(report.Rows)
-	err = writeHTMLReport(report, "index.html")
+	err = writeHTMLReport(report, outputDir+"/index.html")
+	if err != nil {
+		panic(err)
+	}
+	err = writeCSVReport(report, outputDir+"/report.csv")
 	if err != nil {
 		panic(err)
 	}
