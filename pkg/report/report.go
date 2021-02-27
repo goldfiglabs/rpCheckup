@@ -23,6 +23,8 @@ type Row struct {
 	IsPublic         bool
 }
 
+// Access returns a human-readable string describing who can
+// access the resource associated with this Row
 func (r *Row) Access() string {
 	if r.IsPublic {
 		return "Public"
@@ -50,8 +52,8 @@ type Report struct {
 	Rows     []Row
 }
 
-// Generate uses a connection string to postgres and a list of designated-safe ports
-// to produce a report assessing the risk of each resource policy that has been imported.
+// Generate uses a connection string to postgres to produce a report
+// assessing the risk of each resource policy that has been imported.
 func Generate(connectionString string) (*Report, error) {
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
@@ -71,11 +73,21 @@ func Generate(connectionString string) (*Report, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run analysis query")
 	}
-	snapshotsRows, err := runEC2SnapshotQuery(db)
+	volumeSnapshotsRows, err := runEC2SnapshotQuery(db)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run snapshot query")
 	}
-	rows = append(rows, snapshotsRows...)
+	rows = append(rows, volumeSnapshotsRows...)
+	dbSnapshotsRows, err := runRDSDBSnapshotQuery(db)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to run snapshot query")
+	}
+	rows = append(rows, dbSnapshotsRows...)
+	dbClusterSnapshotsRows, err := runRDSDBClusterSnapshotQuery(db)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to run snapshot query")
+	}
+	rows = append(rows, dbClusterSnapshotsRows...)
 	sort.SliceStable(rows, func(i, j int) bool {
 		return sortRowsLess(&rows[i], &rows[j])
 	})
@@ -182,21 +194,21 @@ func runResourceAccessQuery(db *sql.DB) ([]Row, error) {
 	return results, nil
 }
 
-func runEC2SnapshotQuery(db *sql.DB) ([]Row, error) {
-	snapshotQuery, err := loadQuery("public_ec2_snapshots")
+func runSnapshotQuery(db *sql.DB, queryName string, service string, resource string) ([]Row, error) {
+	snapshotQuery, err := loadQuery(queryName)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to load ec2 snapshot query")
+		return nil, errors.Wrapf(err, "Failed to load %v %v query", service, resource)
 	}
 	rows, err := db.Query(snapshotQuery)
 	if err != nil {
-		return nil, errors.Wrap(err, "DB error analyzing ec2 snapshots")
+		return nil, errors.Wrapf(err, "DB error analyzing %v %vs", service, resource)
 	}
 	defer rows.Close()
 	results := []Row{}
 	for rows.Next() {
 		row := Row{
-			Service:      "ec2",
-			ProviderType: "Snapshot",
+			Service:      service,
+			ProviderType: resource,
 		}
 		err = rows.Scan(&row.Arn, &row.IsPublic, pq.Array(&row.InOrgAccounts),
 			pq.Array(&row.ExternalAccounts))
@@ -206,6 +218,18 @@ func runEC2SnapshotQuery(db *sql.DB) ([]Row, error) {
 		results = append(results, row)
 	}
 	return results, nil
+}
+
+func runEC2SnapshotQuery(db *sql.DB) ([]Row, error) {
+	return runSnapshotQuery(db, "public_ec2_snapshots", "ec2", "Snapshot")
+}
+
+func runRDSDBClusterSnapshotQuery(db *sql.DB) ([]Row, error) {
+	return runSnapshotQuery(db, "public_rds_cluster_snapshots", "rds", "DBClusterSnapshot")
+}
+
+func runRDSDBSnapshotQuery(db *sql.DB) ([]Row, error) {
+	return runSnapshotQuery(db, "public_rds_snapshots", "rds", "DBSnapshot")
 }
 
 func loadQuery(name string) (string, error) {

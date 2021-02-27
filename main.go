@@ -154,6 +154,7 @@ var supportedResources resourceSpecMap = map[string][]string{
 	"es":             {"Domain"},
 	"ec2":            {"Image", "Snapshot"},
 	"lambda":         {"Alias", "Function", "LayerVersion"},
+	"rds":            {"DBSnapshot", "DBClusterSnapshot"},
 	"s3":             {"Bucket"},
 	"secretsmanager": {"Secret"},
 	"ses":            {"Identity"},
