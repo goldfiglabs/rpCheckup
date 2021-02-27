@@ -71,6 +71,11 @@ func Generate(connectionString string) (*Report, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run analysis query")
 	}
+	snapshotsRows, err := runEC2SnapshotQuery(db)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to run snapshot query")
+	}
+	rows = append(rows, snapshotsRows...)
 	sort.SliceStable(rows, func(i, j int) bool {
 		return sortRowsLess(&rows[i], &rows[j])
 	})
@@ -174,6 +179,32 @@ func runResourceAccessQuery(db *sql.DB) ([]Row, error) {
 		results = append(results, row)
 	}
 	log.Infof("rows %v", len(results))
+	return results, nil
+}
+
+func runEC2SnapshotQuery(db *sql.DB) ([]Row, error) {
+	snapshotQuery, err := loadQuery("public_ec2_snapshots")
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to load ec2 snapshot query")
+	}
+	rows, err := db.Query(snapshotQuery)
+	if err != nil {
+		return nil, errors.Wrap(err, "DB error analyzing ec2 snapshots")
+	}
+	defer rows.Close()
+	results := []Row{}
+	for rows.Next() {
+		row := Row{
+			Service:      "ec2",
+			ProviderType: "Snapshot",
+		}
+		err = rows.Scan(&row.Arn, &row.IsPublic, pq.Array(&row.InOrgAccounts),
+			pq.Array(&row.ExternalAccounts))
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to unmarshall a row")
+		}
+		results = append(results, row)
+	}
 	return results, nil
 }
 

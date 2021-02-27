@@ -8,6 +8,17 @@ RETURNS TEXT AS $$
 		END
 $$ LANGUAGE sql IMMUTABLE STRICT;
 
+-- Given a snapshot permission, return an account id or '*'
+CREATE OR REPLACE FUNCTION snapshot_account_id(perm JSONB)
+RETURNS TEXT AS $$
+  SELECT
+    CASE
+      WHEN lower(I.id) = 'all' THEN '*'
+      ELSE I.id
+    END AS account_id
+  FROM
+    ( SELECT COALESCE(perm ->> 'Group', perm ->> 'UserId') AS id ) AS I
+$$ LANGUAGE sql IMMUTABLE STRICT;
 
 -- marked stable because we may join with accounts table
 CREATE OR REPLACE FUNCTION extract_account_ids(inval TEXT)

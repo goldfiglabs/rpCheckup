@@ -71,6 +71,7 @@ func writeCSVReport(rpReport *report.Report, outputFilename string) error {
 	}
 	defer outputFile.Close()
 	writer := csv.NewWriter(outputFile)
+	defer writer.Flush()
 	writer.Write([]string{"ARN", "Service", "Resource", "Access Allows", "In-Org Accounts", "External Accounts", "Is Public"})
 	for _, row := range rpReport.Rows {
 		writer.Write([]string{
@@ -143,20 +144,21 @@ func writeHTMLReport(rpReport *report.Report, outputFilename string) error {
 type resourceSpecMap = map[string][]string
 
 var supportedResources resourceSpecMap = map[string][]string{
-	"iam":           {"role"},
-	"glacier":       {"Vault"},
-	"efs":           {"FileSystem"},
-	"organizations": nil,
-	"kms":           {"Key"},
-	"apigateway":    {"RestApi"},
-	"ecr":           {"Repository"},
-	"es":            {"Domain"},
-	"ec2":           {"Volume", "Image"},
-	"lambda":        {"Alias", "Function", "LayerVersion"},
-	"s3":            {"Bucket"},
-	"ses":           {"Identity"},
-	"sns":           {"Topic"},
-	"sqs":           {"Queue"},
+	"iam":            {"role"},
+	"glacier":        {"Vault"},
+	"efs":            {"FileSystem"},
+	"organizations":  nil,
+	"kms":            {"Key"},
+	"apigateway":     {"RestApi"},
+	"ecr":            {"Repository"},
+	"es":             {"Domain"},
+	"ec2":            {"Volume", "Image", "Snapshot"},
+	"lambda":         {"Alias", "Function", "LayerVersion"},
+	"s3":             {"Bucket"},
+	"secretsmanager": {"Secret"},
+	"ses":            {"Identity"},
+	"sns":            {"Topic"},
+	"sqs":            {"Queue"},
 }
 
 func serviceSpec(r resourceSpecMap) string {
