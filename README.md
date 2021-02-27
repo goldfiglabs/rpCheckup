@@ -43,15 +43,18 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 ## Installing
 
 1. Download the latest [release](https://github.com/goldfiglabs/rpCheckup/releases):
+
   Linux:
+
     curl -LO https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_linux
     chmod a+x ./rpCheckup_linux
 
   OSX:
+
     curl -LO https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_osx
     chmod a+x ./rpCheckup_osx
-1. Run from source:
-
+2. Run from source:
+       
     git clone https://github.com/goldfiglabs/rpCheckup.git
     cd rpCheckup
     go run main.go
