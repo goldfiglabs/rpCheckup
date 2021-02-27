@@ -56,7 +56,7 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 
 2. Run from source:
 ```       
-git clone https://github.com/goldfiglabs/ rpCheckup.git
+git clone https://github.com/goldfiglabs/rpCheckup.git
 cd rpCheckup
 go run main.go
 ```
