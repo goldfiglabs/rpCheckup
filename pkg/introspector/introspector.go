@@ -15,7 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const introspectorRef = "goldfig/introspector:latest"
+const introspectorRef = "goldfig/introspector:v1"
 const introspectorContainerName = "introspector"
 
 // Service is a wrapper around a docker container running

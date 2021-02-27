@@ -152,7 +152,7 @@ var supportedResources resourceSpecMap = map[string][]string{
 	"apigateway":     {"RestApi"},
 	"ecr":            {"Repository"},
 	"es":             {"Domain"},
-	"ec2":            {"Volume", "Image", "Snapshot"},
+	"ec2":            {"Image", "Snapshot"},
 	"lambda":         {"Alias", "Function", "LayerVersion"},
 	"s3":             {"Bucket"},
 	"secretsmanager": {"Secret"},
