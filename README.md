@@ -53,11 +53,14 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 
     curl -LO https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_osx
     chmod a+x ./rpCheckup_osx
+
 2. Run from source:
-       
-    git clone https://github.com/goldfiglabs/rpCheckup.git
-    cd rpCheckup
-    go run main.go
+```       
+git clone https://github.com/goldfiglabs/ rpCheckup.git
+cd rpCheckup
+go run main.go
+```
+
 
 ## Usage
 
