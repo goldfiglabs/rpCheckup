@@ -9,6 +9,7 @@ mkdir -p $DIR/dist
 
 cd $DIR
 
-GOOS=darwin GOARCH=amd64 go build -o dist/rpCheckup_osx
+GOOS=darwin GOARCH=amd64 go build -o dist/rpCheckup_darwin_x86
+GOOS=darwin GOARCH=arm64 go build -o dist/rpCheckup_darwin_arm64
 
 GOOS=linux GOARCH=amd64 go build -o dist/rpCheckup_linux
