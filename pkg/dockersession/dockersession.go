@@ -63,26 +63,17 @@ func (ds *Session) FindContainer(name string) (*types.Container, error) {
 }
 
 func (ds *Session) RequireImage(ref string) error {
-	images, err := ds.Client.ImageList(ds.Ctx, types.ImageListOptions{
-		Filters: filters.NewArgs(filters.Arg("reference", ref)),
-	})
+	closer, err := ds.Client.ImagePull(ds.Ctx, ref, types.ImagePullOptions{})
 	if err != nil {
-		return errors.WithMessage(err, "Failed to list images")
+		return errors.WithMessage(err, "Failed to pull image")
 	}
-	if len(images) == 0 {
-		log.Infof("Image %v not found, pulling", ref)
-		closer, err := ds.Client.ImagePull(ds.Ctx, ref, types.ImagePullOptions{})
-		if err != nil {
-			return errors.WithMessage(err, "Failed to pull image")
-		}
-		buf := new(strings.Builder)
-		_, err = io.Copy(buf, closer)
-		if err != nil {
-			return err
-		}
-		log.Debug(buf.String())
-		closer.Close()
+	buf := new(strings.Builder)
+	_, err = io.Copy(buf, closer)
+	if err != nil {
+		return err
 	}
+	log.Debug(buf.String())
+	closer.Close()
 	return nil
 }
 

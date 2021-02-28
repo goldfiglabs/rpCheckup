@@ -64,7 +64,6 @@ func Generate(connectionString string) (*Report, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to ping db")
 	}
-	log.Info("db ready")
 	err = installDbFunctions(db)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to install fixture functions")
@@ -161,11 +160,10 @@ func installDbFunctions(db *sql.DB) error {
 	if err != nil {
 		return errors.New("Failed to load sql for helper functions")
 	}
-	result, err := db.Exec(functions)
+	_, err = db.Exec(functions)
 	if err != nil {
 		return err
 	}
-	log.Infof("result %v", result)
 	return nil
 }
 
@@ -190,7 +188,7 @@ func runResourceAccessQuery(db *sql.DB) ([]Row, error) {
 		}
 		results = append(results, row)
 	}
-	log.Infof("rows %v", len(results))
+	log.Debugf("%v result rows", len(results))
 	return results, nil
 }
 

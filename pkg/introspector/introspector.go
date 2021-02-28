@@ -2,6 +2,8 @@ package introspector
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -20,15 +22,20 @@ const introspectorContainerName = "introspector"
 // https://github.com/goldfiglabs/introspector.
 type Service struct {
 	ds.ContainerService
+	opts Options
 }
 
-func New(s *ds.Session, postgresService ps.PostgresService) (*Service, error) {
+type Options struct {
+	LogDockerOutput bool
+}
+
+func New(s *ds.Session, postgresService ps.PostgresService, opts Options) (*Service, error) {
 	log.Info("Checking for introspector image")
 	err := s.RequireImage(introspectorRef)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to get instrospector docker image")
 	}
-	service, err := createIntrospectorContainer(s, postgresService)
+	service, err := createIntrospectorContainer(s, postgresService, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +44,7 @@ func New(s *ds.Session, postgresService ps.PostgresService) (*Service, error) {
 		return nil, errors.Wrap(err, "Failed to start introspector")
 	}
 	log.Info("Initializing introspector")
-	err = service.runCommand([]string{"init"}, nil, true)
+	err = service.runCommand([]string{"init"}, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to init introspector")
 	}
@@ -46,10 +53,10 @@ func New(s *ds.Session, postgresService ps.PostgresService) (*Service, error) {
 
 func (i *Service) ImportAWSService(environmentCredentials []string, serviceSpec string) error {
 	return i.runCommand(
-		[]string{"account", "aws", "import", "--force", "--service", serviceSpec}, environmentCredentials, true)
+		[]string{"account", "aws", "import", "--force", "--service", serviceSpec}, environmentCredentials)
 }
 
-func createIntrospectorContainer(s *ds.Session, postgresService ps.PostgresService) (*Service, error) {
+func createIntrospectorContainer(s *ds.Session, postgresService ps.PostgresService, opts Options) (*Service, error) {
 	existingContainer, err := s.FindContainer(introspectorContainerName)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to list existing containers")
@@ -69,7 +76,6 @@ func createIntrospectorContainer(s *ds.Session, postgresService ps.PostgresServi
 		fmt.Sprintf("INTROSPECTOR_DB_HOST=%v", address.HostIP),
 		fmt.Sprintf("INTROSPECTOR_DB_PORT=%v", address.HostPort),
 	}
-	log.Infof("Using environment %v", envVars)
 	containerBody, err := s.Client.ContainerCreate(s.Ctx, &container.Config{
 		Image: introspectorRef,
 		Env:   envVars,
@@ -79,9 +85,9 @@ func createIntrospectorContainer(s *ds.Session, postgresService ps.PostgresServi
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to create container")
 	}
-	log.Infof("introspector container ID %v", containerBody.ID)
 	return &Service{
 		ds.ContainerService{ContainerID: containerBody.ID, DockerSession: s},
+		opts,
 	}, nil
 }
 
@@ -94,7 +100,7 @@ func (l *logWriter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-func (i *Service) runCommand(args []string, env []string, logIntrospector bool) error {
+func (i *Service) runCommand(args []string, env []string) error {
 	envVars := []string{}
 	if env != nil {
 		envVars = append(envVars, env...)
@@ -118,11 +124,16 @@ func (i *Service) runCommand(args []string, env []string, logIntrospector bool) 
 	defer resp.Close()
 
 	outputDone := make(chan error)
-	if logIntrospector {
+	if i.opts.LogDockerOutput {
 		errWriter := logWriter{log.Error}
 		infoWriter := logWriter{log.Info}
 		go func() {
 			_, err = stdcopy.StdCopy(&infoWriter, &errWriter, resp.Reader)
+			outputDone <- err
+		}()
+	} else {
+		go func() {
+			_, err = io.Copy(ioutil.Discard, resp.Reader)
 			outputDone <- err
 		}()
 	}

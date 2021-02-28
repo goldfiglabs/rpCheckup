@@ -103,17 +103,18 @@ func NewDockerPostgresService(s *ds.Session, opts DockerPostgresOptions) (*Docke
 	if err != nil {
 		return nil, err
 	}
+	log.Info("Waiting for postgres to be healthy")
 	err = wait.PollImmediate(2*time.Second, 60*time.Second, func() (bool, error) {
 		resp, err := s.Client.ContainerInspect(s.Ctx, service.ContainerID)
 		if err != nil {
 			return false, err
 		}
-		log.Infof("health: %v", resp.State.Health.Status)
 		return resp.State.Health.Status == "healthy", nil
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "Postgres did not become healthy before timeout")
 	}
+	log.Info("Postgres is healthy")
 	return service, nil
 }
 
@@ -193,7 +194,6 @@ func createPostgresContainer(
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to create container")
 	}
-	log.Infof("postgres container id %v", containerBody.ID)
 	return &DockerPostgresService{
 		ContainerService: ds.ContainerService{
 			ContainerID:   containerBody.ID,

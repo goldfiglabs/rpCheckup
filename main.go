@@ -45,7 +45,6 @@ func loadAwsCredentials(ctx context.Context) ([]string, error) {
 }
 
 func printReportRows(rows []report.Row) {
-	log.Infof("Report rows %v", len(rows))
 	for _, r := range rows {
 		fmt.Printf("Arn %v Service %v Resource %v Is Public %v External Accounts [%v] In-Org Accounts [%v]\n",
 			r.Arn, r.Service, r.ProviderType, r.IsPublic, strings.Join(r.ExternalAccounts, ","),
@@ -177,11 +176,13 @@ func serviceSpec(r resourceSpecMap) string {
 func main() {
 	pkger.Include("/templates")
 	pkger.Include("/queries")
-	var skipIntrospector, leavePostgresUp, reusePostgres bool
+	var skipIntrospector, leavePostgresUp, reusePostgres, logIntrospector, printToStdOut bool
 	var outputDir string
 	flag.BoolVar(&skipIntrospector, "skip-introspector", false, "Skip running an import, use existing data")
 	flag.BoolVar(&leavePostgresUp, "leave-postgres", false, "Leave postgres running in a docker container")
 	flag.BoolVar(&reusePostgres, "reuse-postgres", false, "Reuse an existing postgres instance, if it is running")
+	flag.BoolVar(&logIntrospector, "log-introspector", false, "Pass through logs from introspector docker image")
+	flag.BoolVar(&printToStdOut, "print-to-stdout", false, "Print report results to stdout")
 	flag.StringVar(&outputDir, "output", "output", "Specify a directory for output")
 	flag.Parse()
 	ds, err := ds.NewSession()
@@ -209,12 +210,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		i, err := introspector.New(ds, postgresService)
+		i, err := introspector.New(ds, postgresService, introspector.Options{LogDockerOutput: logIntrospector})
 		if err != nil {
 			panic(err)
 		}
 		spec := serviceSpec(supportedResources)
-		log.Infof("Using service spec %v", spec)
+		log.Infof("Running introspector with service spec %v", spec)
+		log.Info("Introspector run may take a few minutes")
 		err = i.ImportAWSService(awsCreds, spec)
 		if err != nil {
 			panic(err)
@@ -234,7 +236,9 @@ func main() {
 			panic(err)
 		}
 	}
-	printReportRows(report.Rows)
+	if printToStdOut {
+		printReportRows(report.Rows)
+	}
 	err = writeHTMLReport(report, outputDir+"/index.html")
 	if err != nil {
 		panic(err)
@@ -243,6 +247,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	log.Infof("Reports written to directory %v", outputDir)
 	if !leavePostgresUp {
 		err = postgresService.ShutDown()
 		if err != nil {
