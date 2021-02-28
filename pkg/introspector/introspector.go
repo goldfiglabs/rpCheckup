@@ -1,9 +1,7 @@
 package introspector
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -38,7 +36,8 @@ func New(s *ds.Session, postgresService ps.PostgresService) (*Service, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to start introspector")
 	}
-	err = service.runCommand([]string{"init"}, nil)
+	log.Info("Initializing introspector")
+	err = service.runCommand([]string{"init"}, nil, true)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to init introspector")
 	}
@@ -47,7 +46,7 @@ func New(s *ds.Session, postgresService ps.PostgresService) (*Service, error) {
 
 func (i *Service) ImportAWSService(environmentCredentials []string, serviceSpec string) error {
 	return i.runCommand(
-		[]string{"account", "aws", "import", "--force", "--service", serviceSpec}, environmentCredentials)
+		[]string{"account", "aws", "import", "--force", "--service", serviceSpec}, environmentCredentials, true)
 }
 
 func createIntrospectorContainer(s *ds.Session, postgresService ps.PostgresService) (*Service, error) {
@@ -86,7 +85,16 @@ func createIntrospectorContainer(s *ds.Session, postgresService ps.PostgresServi
 	}, nil
 }
 
-func (i *Service) runCommand(args []string, env []string) error {
+type logWriter struct {
+	fn func(args ...interface{})
+}
+
+func (l *logWriter) Write(p []byte) (int, error) {
+	l.fn(string(p))
+	return len(p), nil
+}
+
+func (i *Service) runCommand(args []string, env []string, logIntrospector bool) error {
 	envVars := []string{}
 	if env != nil {
 		envVars = append(envVars, env...)
@@ -108,23 +116,16 @@ func (i *Service) runCommand(args []string, env []string) error {
 		return errors.Wrap(err, "Failed to attach to exec")
 	}
 	defer resp.Close()
-	// TODO: correct logging here
 
-	// read the output
 	outputDone := make(chan error)
-	go func() {
-		// StdCopy demultiplexes the stream into two buffers
-		_, err = stdcopy.StdCopy(os.Stdout, os.Stderr, resp.Reader)
-		outputDone <- err
-	}()
-
-	stdin := bufio.NewScanner(os.Stdin)
-	go func() {
-		for stdin.Scan() {
-			resp.Conn.Write(stdin.Bytes())
-			resp.Conn.Write([]byte("\n"))
-		}
-	}()
+	if logIntrospector {
+		errWriter := logWriter{log.Error}
+		infoWriter := logWriter{log.Info}
+		go func() {
+			_, err = stdcopy.StdCopy(&infoWriter, &errWriter, resp.Reader)
+			outputDone <- err
+		}()
+	}
 
 	select {
 	case err := <-outputDone:
