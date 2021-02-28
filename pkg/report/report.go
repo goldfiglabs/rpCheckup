@@ -77,6 +77,11 @@ func Generate(connectionString string) (*Report, error) {
 		return nil, errors.Wrap(err, "Failed to run snapshot query")
 	}
 	rows = append(rows, volumeSnapshotsRows...)
+	imageRows, err := runEC2ImageQuery(db)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to run snapshot query")
+	}
+	rows = append(rows, imageRows...)
 	dbSnapshotsRows, err := runRDSDBSnapshotQuery(db)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run snapshot query")
@@ -220,6 +225,10 @@ func runSnapshotQuery(db *sql.DB, queryName string, service string, resource str
 
 func runEC2SnapshotQuery(db *sql.DB) ([]Row, error) {
 	return runSnapshotQuery(db, "public_ec2_snapshots", "ec2", "Snapshot")
+}
+
+func runEC2ImageQuery(db *sql.DB) ([]Row, error) {
+	return runSnapshotQuery(db, "public_ec2_images", "ec2", "Image")
 }
 
 func runRDSDBClusterSnapshotQuery(db *sql.DB) ([]Row, error) {
