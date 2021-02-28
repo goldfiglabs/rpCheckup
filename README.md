@@ -4,7 +4,7 @@ rpCheckup is an AWS resource policy security checkup tool that identifies public
 
 ## Why?
 
-While there are many tools to assess and analyze IAM policies, the same treatment for policies attached to resources is a blind spot. As product iteration sometimes necessitates overprivisioned access to just get things working, finding such issues after the fact across a slew of different AWS resource types, accounts, and regions isn't straightfoward. 
+While there are many tools to assess and analyze IAM policies, the same treatment for policies attached to resources is a blind spot. As product iteration sometimes necessitates overprivisioned access to just get things working, finding such issues after the fact across a slew of different AWS resource types, accounts, and regions isn't straightfoward.
 
 rpCheckup generates an HTML or CSV report to make this easy.
 
@@ -36,9 +36,9 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 
 ## Pre-requisities
 
-* boto findable credentials (~/.aws/ etc)
-* Docker version >= 19.03.13, build 4484c46d9d
-* If running from source; go version >= go1.16 
+* AWS credentials (~/.aws/, env variables, metadata server, etc)
+* Docker
+* If running from source; go version >= go1.15
 
 ## Installing
 
@@ -55,7 +55,7 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
     chmod a+x ./rpCheckup_osx
 
 2. Run from source:
-```       
+```
 git clone https://github.com/goldfiglabs/rpCheckup.git
 cd rpCheckup
 go run main.go
@@ -64,13 +64,13 @@ go run main.go
 
 ## Usage
 
-Run `./rpCheckup` and view the generated report. 
+Run `./rpCheckup` and view the generated report.
 
 ## Overview
-rpCheckup uses [goldfiglabs/introspector](https://github.com/goldfiglabs/introspector) to snapshot the configuration of your AWS account. rpCheckup runs SQL queries to generate findings based on this snapshot. Introspector does the heavy lifting of importing and normalizing the configurations while rpCheckup is responsible for querying and report generation. 
+rpCheckup uses [goldfiglabs/introspector](https://github.com/goldfiglabs/introspector) to snapshot the configuration of your AWS account. rpCheckup runs SQL queries to generate findings based on this snapshot. Introspector does the heavy lifting of importing and normalizing the configurations while rpCheckup is responsible for querying and report generation.
 
 ## Notes
-Since rpCheckup relies on Introspector's snapshots, rpCheckup is unable to detect policies that are no longer attached. When detecting flapping or transient access, please use tools which utilize audit and security logs (CloudTrail, etc). See [here][2] for further information in preventing resource exposure. 
+Since rpCheckup relies on Introspector's snapshots, rpCheckup is unable to detect policies that are no longer attached. When detecting flapping or transient access, please use tools which utilize audit and security logs (CloudTrail, etc). See [here][2] for further information in preventing resource exposure.
 
 TODO: Add example runs against Endgame Terraform'd account.
 
