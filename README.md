@@ -4,7 +4,7 @@ rpCheckup is an AWS resource policy security checkup tool that identifies public
 
 ## Why?
 
-While there are many tools to assess and analyze IAM policies, the same treatment for policies attached to resources is a blind spot. As product iteration sometimes necessitates overprivisioned access to just get things working, finding such issues after the fact across a slew of different AWS resource types, accounts, and regions isn't straightfoward.
+While there are many tools to assess and analyze IAM policies, the same treatment for policies attached to resources is a blind spot. As product iteration sometimes necessitates overprovisioned access to just get things working, finding such issues after the fact across a slew of different AWS resource types, accounts, and regions isn't straightfoward.
 
 rpCheckup generates an HTML or CSV report to make this easy.
 
