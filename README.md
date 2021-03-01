@@ -39,7 +39,7 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 ## Pre-requisites
 
 * AWS credentials (~/.aws/, env variables, metadata server, etc)
-* Docker
+* Docker (Docker > 20.10.2; docker-compose > 1.27.4)
 * If running from source; go version >= go1.15
 
 ## Installing
@@ -48,13 +48,18 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 
   Linux:
 
-    curl -LO https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_linux
-    chmod a+x ./rpCheckup_linux
+    curl -Lo rpCheckup https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_linux
+    chmod a+x ./rpCheckup
 
-  OSX:
+  OSX x86:
 
-    curl -LO https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_osx
-    chmod a+x ./rpCheckup_osx
+    curl -Lo rpCheckup https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_darwin_amd64
+    chmod a+x ./rpCheckup
+
+  OSX M1/arm:
+
+    curl -Lo rpCheckup https://github.com/goldfiglabs/rpCheckup/releases/latest/download/rpCheckup_darwin_arm64
+    chmod a+x ./rpCheckup
 
 2. Run from source:
 ```
@@ -62,7 +67,6 @@ git clone https://github.com/goldfiglabs/rpCheckup.git
 cd rpCheckup
 go run main.go
 ```
-
 
 ## Usage
 
