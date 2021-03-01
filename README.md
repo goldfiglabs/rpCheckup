@@ -91,4 +91,4 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v.2
 [Mozilla Public License v2.0](./LICENSE)
 
 [1]: https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-resources.html
-[2]: https://endgame.readthedocs.io/en/latest/prevention/#inventory-which-iam-principals-are-capable-of-resource-exposure
+[2]: https://endgame.readthedocs.io/en/latest/prevention/
