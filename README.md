@@ -68,6 +68,8 @@ go run main.go
 
 Run `./rpCheckup` and view the generated report found in `output/`.
 
+<img width="1093" alt="Screen Shot 2021-02-26 at 9 59 12 PM" src="https://user-images.githubusercontent.com/291215/109552865-2bdcdb00-7a87-11eb-95a8-977269043f1d.png">
+
 ## Overview
 rpCheckup uses [goldfiglabs/introspector](https://github.com/goldfiglabs/introspector) to snapshot the configuration of your AWS account. rpCheckup runs SQL queries to generate findings based on this snapshot. Introspector does the heavy lifting of importing and normalizing the configurations while rpCheckup is responsible for querying and report generation.
 
