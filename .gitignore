@@ -16,3 +16,6 @@
 dist/
 .vscode/
 output/
+
+# Generated code for including files/dirs
+pkged.go
