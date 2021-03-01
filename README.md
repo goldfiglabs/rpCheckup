@@ -1,6 +1,6 @@
 # rpCheckup - Resource Policy Checkup for AWS
 
-![rpcheckup2](https://user-images.githubusercontent.com/291215/109551055-ee774e00-7a84-11eb-9242-606b7160eb1b.png | width=200)
+![rpcheckup2](https://user-images.githubusercontent.com/291215/109551055-ee774e00-7a84-11eb-9242-606b7160eb1b.png){:width="200px"}
 
 rpCheckup is an AWS resource policy security checkup tool that identifies public, external account access, intra-org account access, and private resources. It makes it easy to reason about resource visibility across all the accounts in your org.
 
