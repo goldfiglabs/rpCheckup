@@ -1,5 +1,7 @@
 # rpCheckup - Resource Policy Checkup for AWS
 
+![rpcheckup2](https://user-images.githubusercontent.com/291215/109551055-ee774e00-7a84-11eb-9242-606b7160eb1b.png | width=200)
+
 rpCheckup is an AWS resource policy security checkup tool that identifies public, external account access, intra-org account access, and private resources. It makes it easy to reason about resource visibility across all the accounts in your org.
 
 ## Why?
@@ -15,7 +17,7 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 | Resource Type                                  | rpCheckup | Endgame | [AWS Access Analyzer][1] |
 |------------------------------------------------|--------|---------|----------------------------------|
 | ACM Private CAs                | ✅   | ✅     | ❌                               |
-| CloudWatch Resource Policies      | ❌   | ✅     |  ❌                              |
+| CloudWatch Resource Policies      | 🔜   | ✅     |  ❌                              |
 | EBS Volume Snapshots               | ✅   | ✅     | ❌                               |
 | EC2 AMIs                          | ✅   | ✅     | ❌                               |
 | ECR Container Repositories         | ✅   | ✅     | ❌                               |
