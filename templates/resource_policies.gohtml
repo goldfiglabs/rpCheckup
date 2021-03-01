@@ -3,8 +3,11 @@
   <head>
     <title>rpCheckup - By Gold Fig Labs</title>
     <style>
-      .report {
+      body {
+        font-family: sans-serif;
+      }
 
+      .report {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -75,15 +78,15 @@
   </head>
   <body>
     <main class="report">
-      <h1>rpCheckup - By Gold Fig Labs</h1>
+      <h1>rpCheckup - AWS resource policy report</h1>
       <div class="two_columns" style="width: 100%;">
         <section>
           <p>
-            Resource policies snapshotted at:
+            Account snapshot:
             <span class="metadata">{{humanize .Report.Metadata.Imported}}</span>
           </p>
           <p>
-            Report generated at:
+            Report generated:
             <span class="metadata">{{humanize .Report.Metadata.Generated}}</span>
           </p>
         </section>
@@ -121,6 +124,19 @@
           {{end}}
         </tbody>
       </table>
+      
+      &mdash;
+
+      <div class="two_columns" style="width:100%">
+        <section>
+            <a href="https://github.com/goldfiglabs/rpCheckup">goldfiglabs/rpCheckup</a> v0.0.2
+        </section>
+        <section>
+            <a href="https://www.goldfiglabs.com/?utm_source=opensource&utm_medium=rpcheckup&utm_campaign=report">Gold Fig Labs</a>
+        </section>
+      </div>
+
+
     </main>
   </body>
 </html>
