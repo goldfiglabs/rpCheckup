@@ -12,7 +12,7 @@ Gold Fig Introspector - https://github.com/goldfiglabs/introspector/blob/main/CO
 
 rpCheckup specific:
 
-`go`
+* go get github.com/markbates/pkger/cmd/pkger
 
 ## Getting started
 
