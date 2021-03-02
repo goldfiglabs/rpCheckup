@@ -68,7 +68,11 @@ func Generate(connectionString string) (*Report, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to install fixture functions")
 	}
-	rows, err := runResourceAccessQuery(db)
+	metadata, err := loadMetadata(db)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to load metadata")
+	}
+	rows, err := runResourceAccessQuery(db, metadata.Account)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run analysis query")
 	}
@@ -95,10 +99,6 @@ func Generate(connectionString string) (*Report, error) {
 	sort.SliceStable(rows, func(i, j int) bool {
 		return sortRowsLess(&rows[i], &rows[j])
 	})
-	metadata, err := loadMetadata(db)
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to load metadata")
-	}
 	return &Report{
 		Rows:     rows,
 		Metadata: metadata,
@@ -172,12 +172,12 @@ func installDbFunctions(db *sql.DB) error {
 	return nil
 }
 
-func runResourceAccessQuery(db *sql.DB) ([]Row, error) {
+func runResourceAccessQuery(db *sql.DB, accountID string) ([]Row, error) {
 	analysisQuery, err := loadQuery("resource_policy_exposure")
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to to load analysis query")
 	}
-	rows, err := db.Query(analysisQuery)
+	rows, err := db.Query(analysisQuery, accountID)
 	if err != nil {
 		return nil, errors.Wrap(err, "DB error analyzing")
 	}

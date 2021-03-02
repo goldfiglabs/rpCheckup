@@ -27,10 +27,8 @@ SELECT
 	SA.account_id
 FROM
 	statement_access AS SA
-	INNER JOIN resource AS R
-		ON R.id = SA.resource_id
 WHERE
-	arn_account_id(R.uri) != SA.account_id
+	SA.account_id != $1
 	AND NOT EXISTS (SELECT 1 FROM aws_organizations_account AS A WHERE A.Id = SA.account_id)
 	AND SA.account_id != '*'
 GROUP BY SA.resource_id, SA.account_id
@@ -40,10 +38,8 @@ SELECT
 	SA.account_id
 FROM
 	statement_access AS SA
-	INNER JOIN resource AS R
-		ON R.id = SA.resource_id
 WHERE
-	arn_account_id(R.uri) != SA.account_id
+	SA.account_id != $1
 	AND EXISTS (SELECT 1 FROM aws_organizations_account AS A WHERE A.Id = SA.account_id)
 	AND SA.account_id != '*'
 GROUP BY SA.resource_id, SA.account_id
