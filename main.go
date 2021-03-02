@@ -151,7 +151,7 @@ var supportedResources resourceSpecMap = map[string][]string{
 	"apigateway":     {"RestApi"},
 	"ecr":            {"Repository"},
 	"es":             {"Domain"},
-	"ec2":            {"Image", "Snapshot"},
+	"ec2":            {"Images", "Snapshots"},
 	"lambda":         {"Alias", "Function", "LayerVersion"},
 	"rds":            {"DBSnapshot", "DBClusterSnapshot"},
 	"s3":             {"Bucket"},
