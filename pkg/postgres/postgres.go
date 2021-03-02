@@ -8,7 +8,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	ds "github.com/goldfiglabs/rpcheckup/pkg/dockersession"
@@ -182,13 +181,6 @@ func createPostgresContainer(
 		},
 	}, &container.HostConfig{
 		PortBindings: portBindings,
-		Mounts: []mount.Mount{
-			{
-				Type:   "volume",
-				Source: opts.volumeName(),
-				Target: "/var/lib/postgresql/data",
-			},
-		},
 	}, &network.NetworkingConfig{}, nil, opts.ContainerName)
 
 	if err != nil {
