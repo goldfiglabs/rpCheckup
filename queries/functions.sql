@@ -8,14 +8,29 @@ RETURNS TEXT AS $$
 		END
 $$ LANGUAGE sql IMMUTABLE STRICT;
 
+CREATE OR REPLACE FUNCTION all_to_star(identifier TEXT)
+RETURNS TEXT AS $$
+SELECT
+    CASE
+      WHEN lower(identifier) = 'all' THEN '*'
+      ELSE identifier
+    END
+$$ LANGUAGE sql IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION all_to_star(identifier JSONB)
+RETURNS TEXT AS $$
+SELECT
+    CASE
+      WHEN lower(identifier #>> '{}') = 'all' THEN '*'
+      ELSE identifier #>> '{}'
+    END
+$$ LANGUAGE sql IMMUTABLE STRICT;
+
 -- Given a snapshot permission, return an account id or '*'
 CREATE OR REPLACE FUNCTION snapshot_account_id(perm JSONB)
 RETURNS TEXT AS $$
   SELECT
-    CASE
-      WHEN lower(I.id) = 'all' THEN '*'
-      ELSE I.id
-    END AS account_id
+		all_to_star(I.id)
   FROM
     ( SELECT COALESCE(perm ->> 'Group', perm ->> 'UserId') AS id ) AS I
 $$ LANGUAGE sql IMMUTABLE STRICT;

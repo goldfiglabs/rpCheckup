@@ -1,7 +1,7 @@
 WITH snapshot_access AS (
 SELECT
   S.uri,
-  snapshot_account_id(CVP.value) AS account_id
+  all_to_star(CVP.value) AS account_id
 FROM
   aws_rds_dbclustersnapshot AS S
   cross join lateral jsonb_array_elements(S.restore) AS CVP
