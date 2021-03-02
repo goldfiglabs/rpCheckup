@@ -142,9 +142,11 @@ func loadMetadata(db *sql.DB) (*Metadata, error) {
 	if strings.HasPrefix(organization, "OrgDummy") {
 		organization = "<NONE>"
 	}
+	generated := time.Now()
+	imported := endDate.In(generated.Location())
 	return &Metadata{
-		Imported:     endDate,
-		Generated:    time.Now(),
+		Imported:     imported,
+		Generated:    generated,
 		Account:      accountID,
 		Organization: organization,
 	}, nil
