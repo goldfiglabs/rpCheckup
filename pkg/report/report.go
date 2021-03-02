@@ -76,22 +76,22 @@ func Generate(connectionString string) (*Report, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run analysis query")
 	}
-	volumeSnapshotsRows, err := runEC2SnapshotQuery(db)
+	volumeSnapshotsRows, err := runEC2SnapshotQuery(db, metadata.Account)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run snapshot query")
 	}
 	rows = append(rows, volumeSnapshotsRows...)
-	imageRows, err := runEC2ImageQuery(db)
+	imageRows, err := runEC2ImageQuery(db, metadata.Account)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run snapshot query")
 	}
 	rows = append(rows, imageRows...)
-	dbSnapshotsRows, err := runRDSDBSnapshotQuery(db)
+	dbSnapshotsRows, err := runRDSDBSnapshotQuery(db, metadata.Account)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run snapshot query")
 	}
 	rows = append(rows, dbSnapshotsRows...)
-	dbClusterSnapshotsRows, err := runRDSDBClusterSnapshotQuery(db)
+	dbClusterSnapshotsRows, err := runRDSDBClusterSnapshotQuery(db, metadata.Account)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to run snapshot query")
 	}
@@ -197,12 +197,12 @@ func runResourceAccessQuery(db *sql.DB, accountID string) ([]Row, error) {
 	return results, nil
 }
 
-func runSnapshotQuery(db *sql.DB, queryName string, service string, resource string) ([]Row, error) {
+func runSnapshotQuery(db *sql.DB, queryName string, service string, resource string, accountID string) ([]Row, error) {
 	snapshotQuery, err := loadQuery(queryName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to load %v %v query", service, resource)
 	}
-	rows, err := db.Query(snapshotQuery)
+	rows, err := db.Query(snapshotQuery, accountID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "DB error analyzing %v %vs", service, resource)
 	}
@@ -223,20 +223,20 @@ func runSnapshotQuery(db *sql.DB, queryName string, service string, resource str
 	return results, nil
 }
 
-func runEC2SnapshotQuery(db *sql.DB) ([]Row, error) {
-	return runSnapshotQuery(db, "public_ec2_snapshots", "ec2", "Snapshot")
+func runEC2SnapshotQuery(db *sql.DB, accountID string) ([]Row, error) {
+	return runSnapshotQuery(db, "public_ec2_snapshots", "ec2", "Snapshot", accountID)
 }
 
-func runEC2ImageQuery(db *sql.DB) ([]Row, error) {
-	return runSnapshotQuery(db, "public_ec2_images", "ec2", "Image")
+func runEC2ImageQuery(db *sql.DB, accountID string) ([]Row, error) {
+	return runSnapshotQuery(db, "public_ec2_images", "ec2", "Image", accountID)
 }
 
-func runRDSDBClusterSnapshotQuery(db *sql.DB) ([]Row, error) {
-	return runSnapshotQuery(db, "public_rds_cluster_snapshots", "rds", "DBClusterSnapshot")
+func runRDSDBClusterSnapshotQuery(db *sql.DB, accountID string) ([]Row, error) {
+	return runSnapshotQuery(db, "public_rds_cluster_snapshots", "rds", "DBClusterSnapshot", accountID)
 }
 
-func runRDSDBSnapshotQuery(db *sql.DB) ([]Row, error) {
-	return runSnapshotQuery(db, "public_rds_snapshots", "rds", "DBSnapshot")
+func runRDSDBSnapshotQuery(db *sql.DB, accountID string) ([]Row, error) {
+	return runSnapshotQuery(db, "public_rds_snapshots", "rds", "DBSnapshot", accountID)
 }
 
 func loadQuery(name string) (string, error) {

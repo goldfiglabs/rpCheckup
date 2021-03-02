@@ -11,11 +11,11 @@ SELECT
 	bool_or(SA.account_id = '*') AS is_public,
 	ARRAY_AGG(SA.account_id) FILTER (WHERE EXISTS (
 		SELECT 1 FROM aws_organizations_account AS A
-		WHERE A.id = SA.account_id AND arn_account_id(SA.uri) != A.id
+		WHERE A.id = SA.account_id AND $1 != A.id
 	)) AS inorg,
 	ARRAY_AGG(SA.account_id) FILTER (WHERE NOT EXISTS (
 		SELECT 1 FROM aws_organizations_account AS A
-		WHERE A.id = SA.account_id AND arn_account_id(SA.uri) != A.id
+		WHERE A.id = SA.account_id AND $1 != A.id
 	)) AS external
 FROM
 	snapshot_access AS SA
