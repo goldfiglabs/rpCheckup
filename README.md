@@ -39,7 +39,7 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 ## Pre-requisites
 
 * AWS credentials (~/.aws/, env variables, metadata server, etc)
-* Docker (Docker > 20.10.2; docker-compose > 1.27.4)
+* Docker
 * If running from source; go version >= go1.15
 
 ## Installing
