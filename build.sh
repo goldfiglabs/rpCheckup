@@ -10,7 +10,7 @@ mkdir -p $DIR/dist
 cd $DIR
 
 # Pre-req: go get github.com/markbates/pkger/cmd/pkger
-GOBIN="${GOPATH:-~/go}"
+GOBIN="${GOPATH:-${HOME}/go}"
 $GOBIN/bin/pkger
 
 GOOS=darwin GOARCH=amd64 go build -o dist/rpCheckup_darwin_amd64

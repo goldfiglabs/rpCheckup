@@ -78,6 +78,10 @@ Run `./rpCheckup` and view the generated report found in `output/`.
 rpCheckup uses [goldfiglabs/introspector](https://github.com/goldfiglabs/introspector) to snapshot the configuration of your AWS account. rpCheckup runs SQL queries to generate findings based on this snapshot. Introspector does the heavy lifting of importing and normalizing the configurations while rpCheckup is responsible for querying and report generation.
 
 ## Notes
+If the account you are scanning is not the master account in an Organization, other
+accounts in the Organization may be detected as external accounts. This is because
+non-master accounts may not have access to see the organization structure.
+
 Since rpCheckup relies on Introspector's snapshots, rpCheckup is unable to detect policies that are no longer attached. When detecting flapping or transient access, please use tools which utilize audit and security logs (CloudTrail, etc). See [here][2] for further information in preventing resource exposure.
 
 TODO: Add example runs against Endgame Terraform'd account.

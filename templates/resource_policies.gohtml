@@ -14,7 +14,7 @@
       }
 
       .report table {
-        font-size: 12px;
+        font-size: 16px;
         border-spacing: 0;
         margin: auto;
       }
@@ -22,7 +22,7 @@
       .report td,
       .report th {
         border: 1px solid #888;
-        padding: 4px 16px;
+        padding: 4px 10px;
         text-align: center;
       }
 
@@ -74,6 +74,20 @@
       .metadata {
         font-weight: bold;
       }
+
+      .links {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .notes li {
+        padding: 4px;
+      }
+
+      .notes h4 {
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -124,19 +138,36 @@
           {{end}}
         </tbody>
       </table>
-      
+
       &mdash;
 
       <div class="two_columns" style="width:100%">
-        <section>
-            <a href="https://github.com/goldfiglabs/rpCheckup">goldfiglabs/rpCheckup</a> v0.0.2
+        <section class="notes">
+          <h4>Notes</h4>
+          <ol>
+            <li>
+              This report ignores resources that can, but currently don't, have resource
+              policies. That means many resources that are created and managed only by
+              IAM policies will not show up here. This report is intended to cover only the
+              places where a resource policy has been put in place.
+            </li>
+            <li>
+              If the account you are scanning is not the master account in an
+              Organization, other accounts in the Organization may be detected as
+              external accounts. This is because non-master accounts may not have
+              access to see the organization structure.
+            </li>
+          </ol>
         </section>
-        <section>
-            <a href="https://www.goldfiglabs.com/?utm_source=opensource&utm_medium=rpcheckup&utm_campaign=report">Gold Fig Labs</a>
+        <section class="links">
+            <p>
+              <a target="_blank" href="https://github.com/goldfiglabs/rpCheckup">goldfiglabs/rpCheckup</a> v0.0.4
+            </p>
+            <p>
+              Made by <a target="_blank" href="https://www.goldfiglabs.com/">Gold Fig Labs</a>
+            </p>
         </section>
       </div>
-
-
     </main>
   </body>
 </html>
