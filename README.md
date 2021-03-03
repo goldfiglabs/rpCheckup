@@ -72,7 +72,7 @@ go run main.go
 
 Run `./rpCheckup` and view the generated report found in `output/`.
 
-<img width="1093" alt="Screen Shot 2021-02-26 at 9 59 12 PM" src="https://user-images.githubusercontent.com/291215/109552865-2bdcdb00-7a87-11eb-95a8-977269043f1d.png">
+<img width="800" alt="Screen Shot 2021-03-01 at 12 22 36 PM" src="https://user-images.githubusercontent.com/291215/109732631-61122780-7b72-11eb-8f6d-1b51758d2f19.png">
 
 ## Overview
 rpCheckup uses [goldfiglabs/introspector](https://github.com/goldfiglabs/introspector) to snapshot the configuration of your AWS account. rpCheckup runs SQL queries to generate findings based on this snapshot. Introspector does the heavy lifting of importing and normalizing the configurations while rpCheckup is responsible for querying and report generation.
@@ -84,7 +84,16 @@ non-master accounts may not have access to see the organization structure.
 
 Since rpCheckup relies on Introspector's snapshots, rpCheckup is unable to detect policies that are no longer attached. When detecting flapping or transient access, please use tools which utilize audit and security logs (CloudTrail, etc). See [here][2] for further information in preventing resource exposure.
 
-TODO: Add example runs against Endgame Terraform'd account.
+## Sample Reports
+
+See sample reports in `sample/`
+
+<img width="1000" alt="Screen Shot 2021-02-26 at 9 59 12 PM" src="https://user-images.githubusercontent.com/291215/109552865-2bdcdb00-7a87-11eb-95a8-977269043f1d.png">
+
+rpCheckup report against Endgame sample account:
+
+<img width="1000" alt="Screen Shot 2021-03-02 at 4 05 40 PM" src="https://user-images.githubusercontent.com/291215/109732589-4c359400-7b72-11eb-979b-b673ed6d3449.png">
+
 
 ## License
 
