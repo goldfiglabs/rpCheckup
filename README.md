@@ -1,4 +1,4 @@
-# rpCheckup - Resource Policy Checkup for AWS
+# rpCheckup - Catch AWS resource policy backdoors like Endgame
 
 ![rpcheckup2](https://user-images.githubusercontent.com/291215/109551055-ee774e00-7a84-11eb-9242-606b7160eb1b.png)
 
