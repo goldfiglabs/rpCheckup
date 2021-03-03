@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>rpCheckup - By Gold Fig Labs</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+
+      .report {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .report table {
+        font-size: 16px;
+        border-spacing: 0;
+        margin: auto;
+      }
+
+      .report td,
+      .report th {
+        border: 1px solid #888;
+        padding: 4px 10px;
+        text-align: center;
+      }
+
+      .report th {
+        font-style: italic;
+        font-weight: bold;
+      }
+
+      .red {
+        background-color: #f4cccc;
+      }
+
+      .orange {
+        background-color: #fcd6af;
+      }
+
+      .green {
+        background-color: #d9ead3;
+      }
+
+      .yellow {
+        background-color: #fff2cc;
+      }
+
+      .report td.identifier {
+        text-align: left;
+      }
+
+      .two_columns {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        max-width: 900px;
+        width: 100%;
+      }
+
+      .legend h3,
+      .legend h4 {
+        margin-bottom: 4px;
+      }
+
+      .two_columns section {
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 0px;
+        max-width: 50%;
+      }
+
+      .metadata {
+        font-weight: bold;
+      }
+
+      .links {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .notes li {
+        padding: 4px;
+      }
+
+      .notes h4 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="report">
+      <h1>rpCheckup - AWS resource policy report</h1>
+      <div class="two_columns" style="width: 100%;">
+        <section>
+          <p>
+            Account snapshot:
+            <span class="metadata">Tue, 02 Mar 2021 14:20:10 PST</span>
+          </p>
+          <p>
+            Report generated:
+            <span class="metadata">Tue, 02 Mar 2021 15:31:11 PST</span>
+          </p>
+        </section>
+        <section>
+          <p>
+            Organization:
+            <span class="metadata">o-52xzv92d6r</span>
+          </p>
+          <p>Account ID: <span class="metadata">1234512345</span></p>
+        </section>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ARN</th>
+            <th>Service</th>
+            <th>Resource</th>
+            <th>Access Allows</th>
+            <th>In-Org Accounts</th>
+            <th>External Accounts</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>1</td>
+            <td class="identifier">arn:aws:ec2:us-east-1:1234512345:image/ami-048d3c05a67a44f6e</td>
+            <td class="identifier">ec2</td>
+            <td class="identifier">Image
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>2</td>
+            <td class="identifier">arn:aws:ec2:us-east-1:1234512345:snapshot/snap-018137201c2d17347</td>
+            <td class="identifier">ec2</td>
+            <td class="identifier">Snapshot
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>3</td>
+            <td class="identifier">arn:aws:ec2:us-east-1:1234512345:snapshot/snap-07deeacbc6af3fdd7</td>
+            <td class="identifier">ec2</td>
+            <td class="identifier">Snapshot
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>4</td>
+            <td class="identifier">arn:aws:ecr:us-east-1:1234512345:repository/test-resource-exposure</td>
+            <td class="identifier">ecr</td>
+            <td class="identifier">Repository
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>5</td>
+            <td class="identifier">arn:aws:elasticfilesystem:us-east-1:1234512345:file-system/fs-c4141b33</td>
+            <td class="identifier">efs</td>
+            <td class="identifier">FileSystem
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>6</td>
+            <td class="identifier">arn:aws:glacier:us-east-1:1234512345:vaults/test-resource-exposure</td>
+            <td class="identifier">glacier</td>
+            <td class="identifier">Vault
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>7</td>
+            <td class="identifier">arn:aws:iam::1234512345:role/GoldFigOrgAccessToAccount</td>
+            <td class="identifier">iam</td>
+            <td class="identifier">Role
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111, 222222 (2)</td>
+          </tr>
+          
+          <tr>
+            <td>8</td>
+            <td class="identifier">arn:aws:iam::1234512345:role/test-resource-exposure</td>
+            <td class="identifier">iam</td>
+            <td class="identifier">Role
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>9</td>
+            <td class="identifier">arn:aws:iam::1234512345:role/test-resource-exposure-lambda</td>
+            <td class="identifier">iam</td>
+            <td class="identifier">Role
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>10</td>
+            <td class="identifier">arn:aws:lambda:us-east-1:1234512345:function:test-resource-exposure</td>
+            <td class="identifier">lambda</td>
+            <td class="identifier">Function
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>11</td>
+            <td class="identifier">arn:aws:rds:us-east-1:1234512345:snapshot:test-resource-exposure</td>
+            <td class="identifier">rds</td>
+            <td class="identifier">DBSnapshot
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>12</td>
+            <td class="identifier">arn:aws:s3:::rpcheckup.example.com</td>
+            <td class="identifier">s3</td>
+            <td class="identifier">Bucket
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>13</td>
+            <td class="identifier">arn:aws:s3:::test-resource-exposure-vozajksyfjtcmgks</td>
+            <td class="identifier">s3</td>
+            <td class="identifier">Bucket
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>14</td>
+            <td class="identifier">arn:aws:ses:us-east-1:1234512345:identity:test-resource-exposure.com</td>
+            <td class="identifier">ses</td>
+            <td class="identifier">Identity
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>15</td>
+            <td class="identifier">arn:aws:sns:us-east-1:1234512345:test-resource-exposure</td>
+            <td class="identifier">sns</td>
+            <td class="identifier">Topic
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+          <tr>
+            <td>16</td>
+            <td class="identifier">arn:aws:sqs:us-east-1:1234512345:test-resource-exposure</td>
+            <td class="identifier">sqs</td>
+            <td class="identifier">Queue
+            <td class="orange">External Accounts</td>
+            <td>&lt;NONE&gt;</td>
+            <td>111111 (1)</td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      &mdash;
+
+      <div class="two_columns" style="width:100%">
+        <section class="notes">
+          <h4>Notes</h4>
+          <ol>
+            <li>
+              This report ignores resources that can, but currently don't, have resource
+              policies. That means many resources that are created and managed only by
+              IAM policies will not show up here. This report is intended to cover only the
+              places where a resource policy has been put in place.
+            </li>
+            <li>
+              If the account you are scanning is not the master account in an
+              Organization, other accounts in the Organization may be detected as
+              external accounts. This is because non-master accounts may not have
+              access to see the organization structure.
+            </li>
+          </ol>
+        </section>
+        <section class="links">
+            <p>
+              <a target="_blank" href="https://github.com/goldfiglabs/rpCheckup">goldfiglabs/rpCheckup</a> v0.0.2
+            </p>
+            <p>
+              Made by <a target="_blank" href="https://www.goldfiglabs.com/">Gold Fig Labs</a>
+            </p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
