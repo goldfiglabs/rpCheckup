@@ -61,7 +61,8 @@ func (dps *DockerPostgresService) Address() nat.PortBinding {
 }
 
 const postgresContainerName = "postgres-db"
-const defaultPostgresRef = "supabase/postgres:0.13.0"
+
+const defaultPostgresRef = "postgres:13-alpine"
 const defaultPostgresPort = 5432
 
 func (o *DockerPostgresOptions) fillInDefaults() {

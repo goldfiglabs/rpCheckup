@@ -176,9 +176,11 @@ func serviceSpec(r resourceSpecMap) string {
 func main() {
 	pkger.Include("/templates")
 	pkger.Include("/queries")
-	var skipIntrospector, leavePostgresUp, reusePostgres, logIntrospector, printToStdOut bool
-	var outputDir string
+	var skipIntrospector, leavePostgresUp, reusePostgres, logIntrospector, printToStdOut, skipIntrospectorPull bool
+	var outputDir, introspectorRef string
 	flag.BoolVar(&skipIntrospector, "skip-introspector", false, "Skip running an import, use existing data")
+	flag.BoolVar(&skipIntrospectorPull, "skip-introspector-pull", false, "Skip pulling the introspector docker image. Allows for using a local image")
+	flag.StringVar(&introspectorRef, "introspector-ref", "", "Override the introspector docker image to use")
 	flag.BoolVar(&leavePostgresUp, "leave-postgres", false, "Leave postgres running in a docker container")
 	flag.BoolVar(&reusePostgres, "reuse-postgres", false, "Reuse an existing postgres instance, if it is running")
 	flag.BoolVar(&logIntrospector, "log-introspector", false, "Pass through logs from introspector docker image")
@@ -210,7 +212,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		i, err := introspector.New(ds, postgresService, introspector.Options{LogDockerOutput: logIntrospector})
+		i, err := introspector.New(ds, postgresService, introspector.Options{
+			LogDockerOutput: logIntrospector,
+			SkipDockerPull:  skipIntrospectorPull,
+			InspectorRef:    introspectorRef,
+		})
 		if err != nil {
 			panic(err)
 		}

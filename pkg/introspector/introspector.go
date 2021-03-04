@@ -27,13 +27,24 @@ type Service struct {
 
 type Options struct {
 	LogDockerOutput bool
+	SkipDockerPull  bool
+	InspectorRef    string
+}
+
+func (o *Options) fillInDefaults() {
+	if o.InspectorRef == "" {
+		o.InspectorRef = introspectorRef
+	}
 }
 
 func New(s *ds.Session, postgresService ps.PostgresService, opts Options) (*Service, error) {
 	log.Info("Checking for introspector image")
-	err := s.RequireImage(introspectorRef)
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to get instrospector docker image")
+	opts.fillInDefaults()
+	if !opts.SkipDockerPull {
+		err := s.RequireImage(opts.InspectorRef)
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to get instrospector docker image")
+		}
 	}
 	service, err := createIntrospectorContainer(s, postgresService, opts)
 	if err != nil {
@@ -77,7 +88,7 @@ func createIntrospectorContainer(s *ds.Session, postgresService ps.PostgresServi
 		fmt.Sprintf("INTROSPECTOR_DB_PORT=%v", address.HostPort),
 	}
 	containerBody, err := s.Client.ContainerCreate(s.Ctx, &container.Config{
-		Image: introspectorRef,
+		Image: opts.InspectorRef,
 		Env:   envVars,
 	}, &container.HostConfig{
 		NetworkMode: "host",
