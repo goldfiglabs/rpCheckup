@@ -17,7 +17,7 @@ rpCheckup uses the resources supported by [Endgame](https://endgame.readthedocs.
 | Resource Type                                  | rpCheckup | Endgame | [AWS Access Analyzer][1] |
 |------------------------------------------------|--------|---------|----------------------------------|
 | ACM Private CAs                | ✅   | ✅     | ❌                               |
-| CloudWatch Resource Policies      | 🔜   | ✅     |  ❌                              |
+| CloudWatch Resource Policies      | ✅   | ✅     |  ❌                              |
 | EBS Volume Snapshots               | ✅   | ✅     | ❌                               |
 | EC2 AMIs                          | ✅   | ✅     | ❌                               |
 | ECR Container Repositories         | ✅   | ✅     | ❌                               |
