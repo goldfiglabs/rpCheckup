@@ -1,6 +1,6 @@
 # rpCheckup - Catch AWS resource policy backdoors like Endgame
 
-![rpcheckup2](https://user-images.githubusercontent.com/291215/109551055-ee774e00-7a84-11eb-9242-606b7160eb1b.png)
+<img width="724" alt="Screen Shot 2021-03-08 at 11 38 48 AM" src="https://user-images.githubusercontent.com/291215/110372668-73251780-8003-11eb-9006-f3bc7d6893e1.png">
 
 rpCheckup is an AWS resource policy security checkup tool that identifies public, external account access, intra-org account access, and private resources. It makes it easy to reason about resource visibility across all the accounts in your org.
 
