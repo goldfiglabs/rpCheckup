@@ -143,6 +143,7 @@ func writeHTMLReport(rpReport *report.Report, outputFilename string) error {
 type resourceSpecMap = map[string][]string
 
 var supportedResources resourceSpecMap = map[string][]string{
+	"acm-pca":        {"CertificateAuthority"},
 	"iam":            {"role"},
 	"glacier":        {"Vault"},
 	"efs":            {"FileSystem"},
