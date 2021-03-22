@@ -7,6 +7,11 @@ if [[ -z $(which jq) ]]; then
   exit 1
 fi
 
+if [[ -z $(which aws) ]]; then
+  echo "script requires aws cli"
+  exit 1
+fi
+
 if [[ -z $1 ]]; then
   echo "usage: ./run_with_role.sh <ROLE_ARN> [<SESSION_NAME>]"
   exit 2
