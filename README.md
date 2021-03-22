@@ -74,6 +74,24 @@ Run `./rpCheckup` and view the generated report found in `output/`.
 
 <img width="800" alt="Screen Shot 2021-03-01 at 12 22 36 PM" src="https://user-images.githubusercontent.com/291215/109732631-61122780-7b72-11eb-8f6d-1b51758d2f19.png">
 
+## Permissions
+
+rpCheckup needs read-only access to portions of your AWS account.
+A principal (user/role/group) needs the following to make full use 
+of rpCheckup:
+
+```
+AWS Managed Policy: arn:aws:iam::aws:policy/SecurityAudit
+AWS Managed Policy: arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+Additional Permissions:
+  "apigateway:GetRestApis",
+  "efs:Describe*",
+  "acm-pca:List*",
+  "acm-pca:GetPolicy"
+```
+
+Additionally, there is a [Terraform Module](./terraform) for creating a role with the appropriate credentials, as well as a [shell script](./run_with_role.sh) for running with an assumed role (requires running [./build.sh](./build.sh) first).
+
 ## Overview
 rpCheckup uses [goldfiglabs/introspector](https://github.com/goldfiglabs/introspector) to snapshot the configuration of your AWS account. rpCheckup runs SQL queries to generate findings based on this snapshot. Introspector does the heavy lifting of importing and normalizing the configurations while rpCheckup is responsible for querying and report generation.
 
