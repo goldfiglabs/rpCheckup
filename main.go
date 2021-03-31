@@ -25,14 +25,26 @@ import (
 	"github.com/goldfiglabs/rpcheckup/pkg/report"
 )
 
+type awsAuthError struct {
+	Err error
+}
+
+func (e *awsAuthError) Error() string {
+	return "Failed to find AWS Credentials"
+}
+
+func (e *awsAuthError) Unwrap() error {
+	return e.Err
+}
+
 func loadAwsCredentials(ctx context.Context) ([]string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return nil, err
+		return nil, &awsAuthError{err}
 	}
 	creds, err := cfg.Credentials.Retrieve(ctx)
 	if err != nil {
-		return nil, err
+		return nil, &awsAuthError{err}
 	}
 	env := []string{
 		fmt.Sprintf("AWS_ACCESS_KEY_ID=%v", creds.AccessKeyID),
@@ -209,10 +221,24 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	shutdownPostgres := func() {
+		if !leavePostgresUp {
+			err = postgresService.ShutDown()
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
 	if !skipIntrospector {
 		awsCreds, err := loadAwsCredentials(ds.Ctx)
 		if err != nil {
-			panic(err)
+			var authErr *awsAuthError
+			if errors.As(err, &authErr) {
+				shutdownPostgres()
+				log.Fatal("Failed to find AWS Credentials. Please ensure that your enviroment is correctly configued as described here: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html")
+			} else {
+				panic(err)
+			}
 		}
 		i, err := introspector.New(ds, postgresService, introspector.Options{
 			LogDockerOutput: logIntrospector,
@@ -256,10 +282,5 @@ func main() {
 		panic(err)
 	}
 	log.Infof("Reports written to directory %v", outputDir)
-	if !leavePostgresUp {
-		err = postgresService.ShutDown()
-		if err != nil {
-			panic(err)
-		}
-	}
+	shutdownPostgres()
 }
