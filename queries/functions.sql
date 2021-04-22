@@ -49,16 +49,32 @@ $$ LANGUAGE sql STABLE STRICT;
 -- marked stable because it calls a stable function
 CREATE OR REPLACE FUNCTION condition_allowed_accounts(condition JSONB)
 RETURNS Table(account_id TEXT) AS $$
-	SELECT COALESCE(
-	(SELECT
-		A.account_id
-	FROM
-		jsonb_each(condition -> 'StringEquals') AS SE
-		CROSS JOIN LATERAL unpack_maybe_array(SE.value) AS ConditionValue
-    CROSS JOIN LATERAL extract_account_ids(ConditionValue.value #>> '{}') AS A
-	WHERE
-		lower(SE.key) IN ('kms:calleraccount', 'aws:sourceowner', 'aws:principalaccount', 'aws:principalarn', 'aws:sourceaccount', 'aws:sourcearn'))
-	, '*')
+  SELECT
+    COALESCE(
+      (
+        SELECT
+          A.account_id
+        FROM
+          (
+            SELECT
+              SE.*
+            FROM
+              jsonb_each(condition -> 'StringEquals') AS SE
+            WHERE
+              lower(SE.key) IN ('kms:calleraccount', 'aws:sourceowner', 'aws:principalaccount', 'aws:principalarn', 'aws:sourceaccount', 'aws:sourcearn')
+            UNION
+            SELECT
+              AE.*
+            FROM
+              jsonb_each(condition -> 'ArnEquals') AS AE
+            WHERE
+              lower(AE.key) IN ('aws:principalarn', 'aws:sourcearn')
+          ) AS Identifier
+          CROSS JOIN LATERAL unpack_maybe_array(Identifier.value) AS ConditionValue
+          CROSS JOIN LATERAL extract_account_ids(ConditionValue.value #>> '{}') AS A
+      ),
+      '*'
+    )
 $$ LANGUAGE sql STABLE STRICT;
 
 CREATE OR REPLACE FUNCTION allowed_account_ids(S JSONB)
